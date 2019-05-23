@@ -53,8 +53,8 @@ public class GameManager : MonoBehaviour
                 deltaTime += Time.deltaTime;
                 var newTime = delta * (1 - deltaTime / textAnimationTime);
 
-                SetText(_currentGold - delta + (delta - newTime), goldText, _goldPrefix);
-            }).OnComplete(() => { SetText(_currentGold, goldText, _goldPrefix); });
+                Utils.SetText(_currentGold - delta + (delta - newTime), goldText, _goldPrefix);
+            }).OnComplete(() => { Utils.SetText(_currentGold, goldText, _goldPrefix); });
         }
     }
 
@@ -80,8 +80,8 @@ public class GameManager : MonoBehaviour
                 deltaTime += Time.deltaTime;
                 var newTime = delta * (1 - deltaTime / textAnimationTime);
 
-                SetText(_currentHealth - delta + (delta - newTime), healthText, _healthPrefix);
-            }).OnComplete(() => { SetText(_currentHealth, healthText, _healthPrefix); });
+                Utils.SetText(_currentHealth - delta + (delta - newTime), healthText, _healthPrefix);
+            }).OnComplete(() => { Utils.SetText(_currentHealth, healthText, _healthPrefix); });
         }
     }
 
@@ -109,9 +109,9 @@ public class GameManager : MonoBehaviour
         _currentGold = settings.StartGold;
         _currentHealth = settings.StartHealth;
             
-        SetText(_currentHealth, healthText, _healthPrefix);
-        SetText(_currentGold, goldText, _goldPrefix);
-        SetText(settings.WavesCount, wavesText, _wavesPrefix);
+        Utils.SetText(_currentHealth, healthText, _healthPrefix);
+        Utils.SetText(_currentGold, goldText, _goldPrefix);
+        Utils.SetText(settings.WavesCount, wavesText, _wavesPrefix);
         
         _spawnerControllers = new List<SpawnerController>();
         foreach (var spawner in GameObject.FindGameObjectsWithTag("Spawner"))
@@ -202,7 +202,7 @@ public class GameManager : MonoBehaviour
             yield return null;
         
         _currentWave++;
-        SetText(settings.WavesCount - _currentWave, wavesText, _wavesPrefix);
+        Utils.SetText(settings.WavesCount - _currentWave, wavesText, _wavesPrefix);
         
         foreach (var sc in _spawnerControllers)
             sc.SetTimer(settings.WavePeriod);
@@ -221,10 +221,5 @@ public class GameManager : MonoBehaviour
     public void Menu()
     {
         SceneManager.LoadScene("Menu");
-    }
-
-    private void SetText(float value, Text text, string prefix = "")
-    {
-        text.text = string.Format("{0}{1}", prefix, Mathf.Round(value));
     }
 }

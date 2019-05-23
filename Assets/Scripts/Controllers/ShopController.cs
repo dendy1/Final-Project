@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class ShopController : MonoBehaviour
 {
+    [Header("Shop settings")]
     public GameObject shopContainer;
     public GameObject buttonPrefab;
     
@@ -35,10 +36,7 @@ public class ShopController : MonoBehaviour
                 _animator.SetBool("Open", true);
         }
         else
-        {
             _animator.SetBool("Open", false);
-            BuildManager.Instance.CurrentTower = null;
-        }
     }
 
     public void BuyTower(GameObject towerPrefab)

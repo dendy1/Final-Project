@@ -21,7 +21,7 @@ public class CreepController : MonoBehaviour
 
     public void SetTarget(Transform target)
     {
-        _unit.Target = target;
+
     }
 
     private void OnTriggerEnter(Collider other)

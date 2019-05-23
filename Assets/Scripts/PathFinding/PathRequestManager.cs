@@ -10,7 +10,6 @@ public class PathRequestManager : MonoBehaviour
         public Vector3 PathStart { get; set; }
         public Vector3 PathEnd { get; set; }
         public Action<Vector3[], bool> Callback { get; set; }
-        
 
         public PathRequest(Vector3 pathStart, Vector3 pathEnd, Action<Vector3[], bool> callback)
         {

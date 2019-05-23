@@ -127,19 +127,19 @@ namespace DG.Tweening
             [UnityEngine.Scripting.Preserve]
 #endif
             public static TweenerCore<Vector3, Path, PathOptions> CreateDOTweenPathTween(
-                MonoBehaviour target, bool tweenRigidbody, bool isLocal, Path path, float duration, PathMode pathMode
+                MonoBehaviour target, bool tweenRigidbody, bool isLocal, Plugins.Core.PathCore.Path myPath, float duration, PathMode pathMode
             ){
                 TweenerCore<Vector3, Path, PathOptions> t;
 #if true // PHYSICS_MARKER
                 Rigidbody rBody = tweenRigidbody ? target.GetComponent<Rigidbody>() : null;
                 if (tweenRigidbody && rBody != null) {
                     t = isLocal
-                        ? rBody.DOLocalPath(path, duration, pathMode)
-                        : rBody.DOPath(path, duration, pathMode);
+                        ? rBody.DOLocalPath(myPath, duration, pathMode)
+                        : rBody.DOPath(myPath, duration, pathMode);
                 } else {
                     t = isLocal
-                        ? target.transform.DOLocalPath(path, duration, pathMode)
-                        : target.transform.DOPath(path, duration, pathMode);
+                        ? target.transform.DOLocalPath(myPath, duration, pathMode)
+                        : target.transform.DOPath(myPath, duration, pathMode);
                 }
 #else
                 t = isLocal

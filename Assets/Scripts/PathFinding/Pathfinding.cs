@@ -26,6 +26,7 @@ public class Pathfinding : MonoBehaviour
         
         Node startNode = _grid.GetNodeFromWorldPosition(startPosition);
         Node targetNode = _grid.GetNodeFromWorldPosition(targetPosition);
+        startNode.Parent = startNode;
 
         if (startNode.Walkable && targetNode.Walkable)
         {
@@ -59,6 +60,8 @@ public class Pathfinding : MonoBehaviour
                     
                         if (!openHeap.Contains(neighbour))
                             openHeap.Insert(neighbour);
+                        else
+                            openHeap.UpdateItem(neighbour);
                     }
                 }
             }
@@ -68,7 +71,6 @@ public class Pathfinding : MonoBehaviour
 
         if (pathSuccessful)
         {
-            List<Node> path;
             waypoints = RetracePath(startNode, targetNode);
         }
         
@@ -99,7 +101,7 @@ public class Pathfinding : MonoBehaviour
 
         for (int i = 1; i < path.Count; i++)
         {
-            Vector2 newDirection = new Vector2(path[i-1].GridPositionX - path[i].GridPositionX, path[i-1].GridPositionY - path[i].GridPositionY);
+            Vector2 newDirection = new Vector2(path[i - 1].GridPositionX - path[i].GridPositionX, path[i - 1].GridPositionY - path[i].GridPositionY);
 
             if (newDirection != lastDirection)
             {

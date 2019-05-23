@@ -11,26 +11,45 @@ public class TowerPlatform : MonoBehaviour
     
     private void Start()
     {
-        _normalScale = transform.localScale;
+        _normalScale = transform.GetChild(0).localScale;
     }
 
     private void OnMouseOver()
     {
         var tower = BuildManager.Instance.CurrentTower;
-        if (!tower)
-            return;
 
-        transform.localScale = _normalScale * onMouseOverScale;
+        if (!tower || _haveTower)
+            return;
+        
+        transform.GetChild(0).localScale = _normalScale * onMouseOverScale;
     }
 
     private void OnMouseDown()
     {
         var tower = BuildManager.Instance.CurrentTower;
-        
         if (!tower || _haveTower)
             return;
         
-        int price = tower.GetComponent<TowerController>().Price;
+        EventManager.Instance.AddListener("TypoSucceed", OnTypoSucceed);
+        WordsManager.Instance.ShowInputPanel();
+    }
+
+    private void OnMouseExit()
+    {
+        transform.GetChild(0).localScale = _normalScale;
+    }
+
+    private void OnTypoSucceed(object sender, EventArgs args)
+    {
+        var tower = BuildManager.Instance.CurrentTower;
+        
+        if (!tower || _haveTower)
+            return;
+
+        var time = (args as TypoEventArgs).Time;
+        
+        int price = (int)(tower.GetComponent<TowerController>().Price * (time / 6));
+
         if (GameManager.Instance.Gold < price)
             return;
 
@@ -40,12 +59,8 @@ public class TowerPlatform : MonoBehaviour
         }
 
         _haveTower = true;
-        
+        BuildManager.Instance.CurrentTower = null;
         EventManager.Instance.Invoke("TowerBought", this, new GoldEventArgs(price));
-    }
-
-    private void OnMouseExit()
-    {
-        transform.localScale = _normalScale;
+        EventManager.Instance.RemoveListener("TypoSucceed", OnTypoSucceed);
     }
 }

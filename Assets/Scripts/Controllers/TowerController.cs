@@ -19,11 +19,12 @@ public class TowerController : MonoBehaviour
     [SerializeField] private float turnSpeed;
     [SerializeField] private float bulletSpeed;
     [SerializeField] private float damage;
-    
-    public int Price { get; }
+    [SerializeField] private int price;
+
     private bool _isShooting;    
     private GameObject _target;
 
+    public int Price => price;
 
     private void Start()
     {
@@ -144,7 +145,7 @@ public class TowerController : MonoBehaviour
 
     private void OnDoubleClick()
     {
-        EventManager.Instance.Invoke("TowerSelled", this, new GoldEventArgs(Price));
+        EventManager.Instance.Invoke("TowerSelled", this, new GoldEventArgs(price));
         
         var po = GetComponent<PoolObject>();
         if (!po)
