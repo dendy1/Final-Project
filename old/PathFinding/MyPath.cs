@@ -5,7 +5,7 @@ public class MyPath
     public readonly Vector3[] LookPoints;
     public readonly Line[] TurnBoundaries;
     public readonly int FinishLineIndex;
-    public readonly int SlowingIndex;
+    public readonly int StoppingIndex;
 
     public MyPath(Vector3[] waypoints, Vector3 startPosition, float turnDistance, float stoppingDistance)
     {
@@ -33,7 +33,7 @@ public class MyPath
 
             if (distanceFromEnd > stoppingDistance)
             {
-                SlowingIndex = i;
+                StoppingIndex = i;
                 break;
             }
         }

@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Node : HeapItem<Node>
 {
-    public bool Walkable { get; }
+    public bool Walkable { get; set; }
     public int MovementPenalty { get; set; }
-    public Vector3 WorldPosition { get; }
-    public int GridPositionX { get; }
-    public int GridPositionY { get; }
+    public Vector3 WorldPosition { get; set; }
+    
+    public int GridPositionX { get; set; }
+    public int GridPositionY { get; set; }
 
     /// <summary>
     /// Distance between node and start node

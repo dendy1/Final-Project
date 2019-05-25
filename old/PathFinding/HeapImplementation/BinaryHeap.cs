@@ -37,13 +37,16 @@ public class BinaryHeap<T> where T : HeapItem<T>
 
     public T Extract()
     {
+        if (Count == 0)
+            throw new IndexOutOfRangeException();
+
         T extractable = _items[0];
         _currentItemIndex--;
 
         _items[0] = _items[_currentItemIndex];
         _items[0].HeapIndex = 0;
         
-        ReCalculateDown(_items[0]);
+        ReCalculateDown(extractable);
         return extractable;
     }
 
@@ -54,11 +57,9 @@ public class BinaryHeap<T> where T : HeapItem<T>
 
     private void ReCalculateUp(T item)
     {
-        int parentIndex = (item.HeapIndex - 1) / 2;
-        
         while (true)
         {
-            T parentItem = _items[parentIndex];
+            T parentItem = _items[item.ParentIndex];
             
             if (item.CompareTo(parentItem) > 0)
                 Swap(parentItem, item);
@@ -71,11 +72,11 @@ public class BinaryHeap<T> where T : HeapItem<T>
     {
         while (true)
         {
-            int leftChild = item.HeapIndex * 2 + 1, rightChild = item.HeapIndex * 2 + 2;
+            int swapIndex = 0, leftChild = item.LeftChildIndex, rightChild = item.RightChildIndex;
 
             if (leftChild < _currentItemIndex)
             {
-                var swapIndex = leftChild;
+                swapIndex = leftChild;
 
                 if (rightChild < _currentItemIndex)
                     if (_items[leftChild].CompareTo(_items[rightChild]) < 0)

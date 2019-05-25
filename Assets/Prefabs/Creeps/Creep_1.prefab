@@ -10,7 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6116428201645511542}
   - component: {fileID: 8899782125151182652}
+  - component: {fileID: 3948098590288380454}
   - component: {fileID: 2400913374324315030}
+  - component: {fileID: 2582353157330002901}
   - component: {fileID: 3683160776027374605}
   - component: {fileID: 2848479607300386873}
   - component: {fileID: 4357081334925630008}
@@ -32,7 +34,7 @@ Transform:
   m_GameObject: {fileID: 425011184317190966}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 2916782162898997136}
   m_Father: {fileID: 0}
@@ -54,6 +56,25 @@ MonoBehaviour:
   healthBar: {fileID: 3601259292515349828}
   particleEffect: {fileID: 2479331104132061604, guid: c0376e37c239dd4479912fa4ed2b7ad2,
     type: 3}
+--- !u!114 &3948098590288380454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425011184317190966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a27cd8b6540711449cf437b82ff278e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MaxHealth: 100
+  armor:
+    baseValue: 0
+  damage:
+    baseValue: 4
+  gold:
+    baseValue: 10
 --- !u!114 &2400913374324315030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66,6 +87,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12164dfd6a6872a40a9cec59d948414e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementSpeed: 5
+  turnDistance: 5
+  rotationSpeed: 5
+  stoppingDistance: 0
+  target: {fileID: 0}
+--- !u!114 &2582353157330002901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425011184317190966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12164dfd6a6872a40a9cec59d948414e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementSpeed: 5
+  turnDistance: 5
+  rotationSpeed: 5
+  stoppingDistance: 5
+  target: {fileID: 0}
 --- !u!114 &3683160776027374605
 MonoBehaviour:
   m_ObjectHideFlags: 0

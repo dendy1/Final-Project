@@ -14,13 +14,18 @@ public class Pathfinding : MonoBehaviour
         _grid = GetComponent<Grid>();
     }
 
-    public void FindPath(PathRequest request, Action<PathResult> callback)
+    public void StartFindPath(Vector3 startPosition, Vector3 targetPosition)
+    {
+        StartCoroutine(FindPath(startPosition, targetPosition));
+    }
+
+    private IEnumerator FindPath(Vector3 startPosition, Vector3 targetPosition)
     {
         Vector3[] waypoints = new Vector3[0];
         bool pathSuccessful = false;
         
-        Node startNode = _grid.GetNodeFromWorldPosition(request.PathStart);
-        Node targetNode = _grid.GetNodeFromWorldPosition(request.PathEnd);
+        Node startNode = _grid.GetNodeFromWorldPosition(startPosition);
+        Node targetNode = _grid.GetNodeFromWorldPosition(targetPosition);
         startNode.Parent = startNode;
 
         if (startNode.Walkable && targetNode.Walkable)
@@ -46,7 +51,7 @@ public class Pathfinding : MonoBehaviour
                         continue;
 
                     int newMovementCostToNeighbour = currentNode.GCost + currentNode.GetDistance(neighbour) + neighbour.MovementPenalty;
-                    
+                
                     if (newMovementCostToNeighbour < neighbour.GCost || !openHeap.Contains(neighbour))
                     {
                         neighbour.GCost = newMovementCostToNeighbour;
@@ -61,14 +66,15 @@ public class Pathfinding : MonoBehaviour
                 }
             }
         }
-        
+
+        yield return null;
+
         if (pathSuccessful)
         {
             waypoints = RetracePath(startNode, targetNode);
-            pathSuccessful = waypoints.Length > 0;
         }
-
-        callback(new PathResult(waypoints, pathSuccessful, request.Callback));
+        
+        PathRequestManager.Instance.OnFinishedProcessingPath(waypoints, pathSuccessful);
     }
 
     private Vector3[] RetracePath(Node startNode, Node endNode)

@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\Users\borod\.Rider2018.3\system\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\borod\.Rider2018.3\system\resharper-host\local\Transient\ReSharperHost\v183\SolutionCaches\_Final-Project.-1349709374.00" t="ExcludeRecursive" />
-    <e p="C:\Users\borod\Documents\GitHub\Final-Project" t="IncludeRecursive">
+    <e p="C:\UnityProjects\Final-Project" t="IncludeRecursive">
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="Demigiant" t="Include">
@@ -59,6 +57,7 @@
           <e p="ObjectUI.cs" t="Include" />
           <e p="PathFinding" t="Include">
             <e p="Grid.cs" t="Include" />
+            <e p="Heap.cs" t="Include" />
             <e p="HeapImplementation" t="Include">
               <e p="BinaryHeap.cs" t="Include" />
               <e p="HeapItem.cs" t="Include" />
@@ -105,5 +104,7 @@
         <e p="bin" t="ExcludeRecursive" />
       </e>
     </e>
+    <e p="C:\Users\Andrey\.Rider2018.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Andrey\.Rider2018.3\system\resharper-host\local\Transient\ReSharperHost\v183\SolutionCaches\_Final-Project.-1511097936.00" t="ExcludeRecursive" />
   </component>
 </project>
