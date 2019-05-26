@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -29,17 +30,30 @@ public class ShopController : MonoBehaviour
 
     void Update()
     {
-        GameManager.Instance.ShopMenuOpened = Input.GetKey(KeyCode.Tab);
-        
         if (Input.GetKey(KeyCode.Tab))
-        {
-            if (!_animator.GetBool("Open"))
-                _animator.SetBool("Open", true);
-        }
+            GameManager.Instance.ShopMenuOpened = true;
+        
+        if (Input.GetKeyUp(KeyCode.Tab))
+            GameManager.Instance.ShopMenuOpened = false;
+        
+        
+        if (GameManager.Instance.ShopMenuOpened)
+            OpenShop();
         else
-            _animator.SetBool("Open", false);
+            CloseShop();
     }
 
+    private void OpenShop()
+    {
+        if (!_animator.GetBool("Open"))
+            _animator.SetBool("Open", true);
+    }
+
+    private void CloseShop()
+    {
+        _animator.SetBool("Open", false);
+    }
+    
     public void BuyTower(GameObject towerPrefab)
     {
         BuildManager.Instance.CurrentTower = towerPrefab;

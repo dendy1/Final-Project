@@ -16,12 +16,7 @@ public class BattleManager : MonoBehaviour
    private void Awake()
    {
       var obj = Scenes.GetSceneParameters;
-
-      _attack = obj[0];
-      _defence = obj[1];
       
-      Debug.Log(_attack);
-      Debug.Log(_defence);
    }
 }
 

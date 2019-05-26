@@ -337,4 +337,9 @@ public class GameManager : MonoBehaviour
 
         return spawn;
     }
+
+    public void OpenCloseShop()
+    {
+        ShopMenuOpened = !ShopMenuOpened;
+    }
 }

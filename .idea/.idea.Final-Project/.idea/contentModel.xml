@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\UnityProjects\Final-Project" t="IncludeRecursive">
+    <e p="C:\Users\borod\.Rider2018.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\borod\.Rider2018.3\system\resharper-host\local\Transient\ReSharperHost\v183\SolutionCaches\_Final-Project.-1349709374.00" t="ExcludeRecursive" />
+    <e p="C:\Users\borod\Documents\GitHub\Final-Project" t="IncludeRecursive">
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="Demigiant" t="Include">
@@ -61,6 +63,7 @@
             <e p="BuildManager.cs" t="Include" />
             <e p="GameManager.cs" t="Include" />
             <e p="MenuManager.cs" t="Include" />
+            <e p="PauseMenu.cs" t="Include" />
             <e p="Scenes.cs" t="Include" />
             <e p="ShopManager.cs" t="Include" />
             <e p="WordsManager.cs" t="Include" />
@@ -119,7 +122,5 @@
         <e p="bin" t="ExcludeRecursive" />
       </e>
     </e>
-    <e p="C:\Users\Andrey\.Rider2018.3\system\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\Andrey\.Rider2018.3\system\resharper-host\local\Transient\ReSharperHost\v183\SolutionCaches\_Final-Project.-1511097936.00" t="ExcludeRecursive" />
   </component>
 </project>
