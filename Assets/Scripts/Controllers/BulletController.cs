@@ -1,31 +1,31 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class BulletController : MonoBehaviour
 {
-    private GameObject _target;
+    private Transform _target;
     private float _speed;
-    private float _damage;
     
-    public float Damage => _damage;
+    public int Damage { get; set; }
     
     private void Update()
     {
+        if (!_target || !_target.gameObject.activeSelf)
+            GameManager.Instance.DestroyObject(gameObject);
+        
         transform.position = Vector3.MoveTowards(transform.position, _target.transform.position, _speed * Time.deltaTime);
         transform.LookAt(_target.transform);
-        
-        if (!_target.activeSelf)
-            GetComponent<PoolObject>().ReturnToPool();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        GetComponent<PoolObject>().ReturnToPool();
+        GameManager.Instance.DestroyObject(gameObject);
     }
 
-    public void SetFields(GameObject target, float speed, float damage)
+    public void SetFields(Transform target, float speed, int damage)
     {
         _speed = speed;
         _target = target;
-        _damage = damage;
+        Damage = damage;
     }
 }

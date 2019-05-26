@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using DG.Tweening.Plugins;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
@@ -10,9 +9,9 @@ public class Unit : MonoBehaviour
     [SerializeField] private float movementSpeed = 5f;
     [SerializeField] private float turnDistance = 5f;
     [SerializeField] private float rotationSpeed = 5f;
-    [SerializeField] private float stoppingDistance = 0f;
+    public float stoppingDistance = 0f;
     
-    [SerializeField] private Transform target;
+    [SerializeField] private Vector3 targetPosition;
     
     private MyPath _path;
     private Vector3[] _waypoints;
@@ -29,9 +28,9 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public void SetTarget(Transform target)
+    public void SetTarget(Vector3 target)
     {
-        this.target = target;
+        targetPosition = target;
         StopCoroutine("UpdatePath");
         StartCoroutine("UpdatePath");
     }
@@ -41,19 +40,19 @@ public class Unit : MonoBehaviour
         if (Time.timeSinceLevelLoad < 0.2f)
             yield return new WaitForSeconds(0.2f);
         
-        PathRequestManager.Instance.RequestPath(new PathRequest(transform.position,target.position, OnPathFound));
+        PathRequestManager.Instance.RequestPath(new PathRequest(transform.position,targetPosition, OnPathFound));
         
         float sqrMoveThreshHold = PathUpdateMoveThreshhold * PathUpdateMoveThreshhold;
-        Vector3 lastTargetPosition = target.position;
+        Vector3 lastTargetPosition = targetPosition;
         
         while (true)
         {
             yield return new WaitForSeconds(MinimumPathUpdateTime);
-            if ((target.position - lastTargetPosition).sqrMagnitude > sqrMoveThreshHold)
+            if ((targetPosition - lastTargetPosition).sqrMagnitude > sqrMoveThreshHold)
             {
                 _index = 0;
-                PathRequestManager.Instance.RequestPath(new PathRequest(transform.position,target.position, OnPathFound));
-                lastTargetPosition = target.position;
+                PathRequestManager.Instance.RequestPath(new PathRequest(transform.position,targetPosition, OnPathFound));
+                lastTargetPosition = targetPosition;
             }
         }
     }

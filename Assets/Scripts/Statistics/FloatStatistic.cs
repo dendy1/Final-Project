@@ -2,11 +2,11 @@
 using UnityEngine;
 
 [Serializable]
-public class Statistic
+public class FloatStatistic 
 {
-    [SerializeField] private int baseValue;
+    [SerializeField] private float baseValue;
 
-    public int Value
+    public float Value
     {
         get { return baseValue; }
     }

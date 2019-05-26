@@ -32,4 +32,9 @@ public class Utils
     {
         text.text = string.Format("{0}{1}", prefix, Mathf.Round(value));
     }
+    
+    public static void SetText(string value, Text text, string prefix = "")
+    {
+        text.text = string.Format("{0}{1}", prefix, value);
+    }
 }

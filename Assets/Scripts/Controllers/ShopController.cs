@@ -14,14 +14,14 @@ public class ShopController : MonoBehaviour
     void Start()
     {
         _animator = shopContainer.GetComponent<Animator>();
-
         _towers = ShopManager.Instance.Towers;
+        
         for (int i = 0; i < _towers.Length; i++)
         {
             var button = Instantiate(buttonPrefab);
             button.GetComponent<RectTransform>().SetParent(shopContainer.transform);
             button.transform.GetChild(0).GetComponent<Text>().text = _towers[i].name;
-            button.transform.GetChild(1).GetComponent<Text>().text = _towers[i].GetComponent<TowerController>().Price.ToString();
+            button.transform.GetChild(1).GetComponent<Text>().text = _towers[i].GetComponent<TowerStats>().Price.ToString();
             var towerPrefab = _towers[i];
             button.GetComponent<Button>().onClick.AddListener(() => BuyTower(towerPrefab));
         }
@@ -29,7 +29,8 @@ public class ShopController : MonoBehaviour
 
     void Update()
     {
-        CameraController.Freeze = Input.GetKey(KeyCode.Tab);
+        GameManager.Instance.ShopMenuOpened = Input.GetKey(KeyCode.Tab);
+        
         if (Input.GetKey(KeyCode.Tab))
         {
             if (!_animator.GetBool("Open"))

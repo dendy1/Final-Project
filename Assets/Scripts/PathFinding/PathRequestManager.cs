@@ -8,7 +8,6 @@ using Vector3 = UnityEngine.Vector3;
 
 public class PathRequestManager : MonoBehaviour
 {
-   
     public static PathRequestManager Instance { get; set; }
     
     private Pathfinding _pathfinding;
@@ -46,8 +45,12 @@ public class PathRequestManager : MonoBehaviour
     
     public void RequestPath(PathRequest request)
     {
-        Thread newThread = new Thread(() => _pathfinding.FindPath(request, OnFinishedProcessingPath));
-        newThread.Start();
+        ThreadStart threadStart = delegate {
+            _pathfinding.FindPath (request, OnFinishedProcessingPath);
+        };
+        threadStart.Invoke();
+        //_pathFindingThread = new Thread(threadStart);
+        //_pathFindingThread.Start();
     }
 
     public void OnFinishedProcessingPath(PathResult result)

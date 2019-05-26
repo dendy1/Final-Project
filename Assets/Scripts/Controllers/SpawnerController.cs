@@ -2,69 +2,96 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class SpawnerController : MonoBehaviour
 {
     [Header("Text field")]
-    [SerializeField] private Text timeText;
-    
-    [Header("Creep Samples")]
-    [SerializeField] private GameObject[] creepSamples;
-    
-    [Header("Time to spawn")]
-    [SerializeField] private float spawnTime;
+    [SerializeField] private Text tableText;
+
+    [Header("Waves Settings")] 
+    [SerializeField] private Wave[] waves;
+    [SerializeField] private GameObject bossSample;
     
     [Header("Base Transform")]
     [SerializeField] private Transform target;
     
     private float _spawnTimer;
-    private int _creepsCount;
+    private int _currentWaveIndex;
+    private bool _bossFighting;
 
+    public bool WavesOver { get; private set; }
+    public bool WaveIsOn { get; private set; }
+    
     private void Start()
     {
-        timeText.enabled = false;
+        tableText.enabled = false;
         _spawnTimer = 0;
     }
 
-    private void SpawnCreep()
+    private void SpawnCreep(GameObject creepSample)
     {
-        int index = Random.Range(0, creepSamples.Length);
-        GameObject currentCreep = creepSamples[index];
-        
-        var creep = PoolManager.GetObject(currentCreep.name, transform.position, Quaternion.identity);
-        if (!creep)
-            creep = Instantiate(currentCreep, transform.position, Quaternion.identity);
-
-        creep.GetComponent<CreepController>().SetTarget(target);
-        
-        _spawnTimer = spawnTime;
-        _creepsCount++;
-        
+        var spawnPosition = new Vector3(transform.position.x, 0, transform.position.z);
+        var creepObj = GameManager.Instance.SpawnObject(creepSample, spawnPosition, Quaternion.identity);
+        creepObj.GetComponent<CreepController>().SetTarget(target.position);
         EventManager.Instance.Invoke("CreepSpawned", this, EventArgs.Empty);
     }
 
     public void StartWave()
     {
-        StartCoroutine("Wave");
+        StopCoroutine("StartNewWave");
+        StartCoroutine("StartNewWave");
+    }
+    
+    public void StartFinalWave()
+    {
+        StopCoroutine("StartNewBossWave");
+        StartCoroutine("StartNewBossWave");
     }
 
-    IEnumerator Wave()
+    IEnumerator StartNewWave()
     {
-        while (_creepsCount < GameManager.Instance.CreepsPerWave)
+        while (_currentWaveIndex >= waves.Length)
+            yield return null;
+
+        WaveIsOn = true;
+        Wave currentWave = waves[_currentWaveIndex];
+        
+        int creepType = 0;
+
+        while (currentWave.CreepsCount > 0)
         {
             _spawnTimer -= Time.deltaTime;
+            
             if (_spawnTimer <= 0)
             {
-                SpawnCreep();
+                CreepForWave creep = currentWave.CreepsForSpawn[creepType];
+                SpawnCreep(creep.Sample);
+                creep.Count--;
+
+                if (creep.Count == 0)
+                    creepType++;
+                
+                _spawnTimer = currentWave.SpawnTime;
             }
 
             yield return null;
         }
+    
+        if (++_currentWaveIndex == waves.Length)
+            WavesOver = true;
 
-        _creepsCount = 0;
         EventManager.Instance.Invoke("WaveOver", this, EventArgs.Empty);
+        WaveIsOn = false;
+    }
+    
+    IEnumerator StartNewBossWave()
+    {
+        SpawnCreep(bossSample);
+        EventManager.Instance.Invoke("BossWaveOver", this, EventArgs.Empty);
+        yield return null;
     }
 
     public void SetTimer(float time)
@@ -75,15 +102,15 @@ public class SpawnerController : MonoBehaviour
 
     IEnumerator WaveTimer(float time)
     {
-        timeText.enabled = true;
+        tableText.enabled = true;
 
         while (time > 0)
         {
-            timeText.text = ((int)time).ToString();
+            tableText.text = ((int)time).ToString();
             time -= Time.deltaTime;
             yield return null;
         }
 
-        timeText.enabled = false;
+        tableText.enabled = false;
     }
 }

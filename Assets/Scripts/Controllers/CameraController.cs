@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public static bool Freeze;
-
     [Header("Camera Restrictions")] 
     [SerializeField] private float zoomMinimumFOV;
     [SerializeField] private float zoomMaximumFOV;
@@ -34,7 +32,7 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        if (Freeze || freeze)
+        if (freeze || GameManager.Instance.ShopMenuOpened || GameManager.Instance.InputMenuOpened)
             return;
         
         var mouse = Input.mousePosition;

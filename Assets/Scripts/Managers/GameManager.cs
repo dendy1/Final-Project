@@ -10,15 +10,19 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    [Header("Screens")]
     [SerializeField] private GameObject winScreen;
     [SerializeField] private GameObject loseScreen;
-    
+
     [Header("Text Fields")]
     [SerializeField] private Text healthText;
     [SerializeField] private Text goldText;
     [SerializeField] private Text wavesText;
     [SerializeField] private float textAnimationTime;
 
+    [Header("Base Setup")] [SerializeField]
+    private GameObject baseObject;
+    
     [Header("Game Setup")]
     public GameSettings settings;
     
@@ -26,21 +30,51 @@ public class GameManager : MonoBehaviour
 
     private int _currentGold;
     private float _currentHealth;
-    private int _currentWave;
-    
     private int _creepsCount;
+
+    private float _score;
     
     private int _spawnersReady;
-    private bool _gameover;
+    private bool _gameOver;
+    private int _wavesCount;
+    private bool _bossFight;
 
-    private string _wavesPrefix = "WAVES REMAINING: ";
+    private string _wavesPrefix = "NEW WAVE IN: ";
     private string _goldPrefix = "GOLD: ";
     private string _healthPrefix = "HEALTH: ";
+
+    private bool WavesOver
+    {
+        get
+        {
+            foreach (var sc in _spawnerControllers)
+            {
+                if (!sc.WavesOver)
+                    return false;
+            }
+
+            return true;
+        }
+    }
+
+    private bool OnGoingWaves
+    {
+        get
+        {
+            foreach (var sc in _spawnerControllers)
+            {
+                if (sc.WaveIsOn)
+                    return true;
+            }
+
+            return false;
+        }
+    }
 
     public int Gold
     {
         get { return _currentGold; }
-        set
+        private set
         {
             var delta = value - _currentGold;
             
@@ -58,7 +92,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public float Health
+    private float Health
     {
         get => _currentHealth;
         set
@@ -69,12 +103,12 @@ public class GameManager : MonoBehaviour
                 _currentHealth = 0;
                 return;
             }
-            
+
             _currentHealth = value;
-            
+
             healthText.DOKill();
             float deltaTime = 0f;
-            
+
             healthText.DOFade(1f, textAnimationTime).OnUpdate(() =>
             {
                 deltaTime += Time.deltaTime;
@@ -84,14 +118,11 @@ public class GameManager : MonoBehaviour
             }).OnComplete(() => { Utils.SetText(_currentHealth, healthText, _healthPrefix); });
         }
     }
+    
+    public bool InputMenuOpened { get; set; }
+    public bool ShopMenuOpened { get; set; }
 
-    public int CreepsPerWave => settings.CreepsPerWave;
-
-    public GameSettings Settings
-    {
-        get => settings;
-        set => settings = value;
-    }
+    public bool FinalWave { get; set; }
 
     private void Awake()
     {
@@ -102,6 +133,30 @@ public class GameManager : MonoBehaviour
         }
         
         Instance = this;
+        
+        EventManager.Instance.AddListener("TowerBought", (sender, args) =>
+        {
+            Gold -= (args as GoldEventArgs).Gold;
+            _score += (args as GoldEventArgs).Gold;
+        });
+        EventManager.Instance.AddListener("TowerSold", (sender, args) =>
+        {
+            Gold += (int)((args as GoldEventArgs).Gold * 0.5f);
+            _score += (args as GoldEventArgs).Gold * 0.1f;
+        });
+
+        EventManager.Instance.AddListener("BaseAttacked", OnBaseAttacked);
+        EventManager.Instance.AddListener("WaveOver", OnWaveOver);
+        EventManager.Instance.AddListener("BossWaveOver", OnBossWaveOver);
+        
+        EventManager.Instance.AddListener("CreepKilled", OnCreepKilled);
+        EventManager.Instance.AddListener("CreepSpawned", (sender, args) => _creepsCount++);
+        
+        EventManager.Instance.AddListener("TowerRepaired", (sender, args) =>
+        {
+            Gold -= (args as GoldEventArgs).Gold;
+            _score += (args as GoldEventArgs).Gold * 0.1f;
+        });
     }
 
     private void Start()
@@ -111,7 +166,6 @@ public class GameManager : MonoBehaviour
             
         Utils.SetText(_currentHealth, healthText, _healthPrefix);
         Utils.SetText(_currentGold, goldText, _goldPrefix);
-        Utils.SetText(settings.WavesCount, wavesText, _wavesPrefix);
         
         _spawnerControllers = new List<SpawnerController>();
         foreach (var spawner in GameObject.FindGameObjectsWithTag("Spawner"))
@@ -120,30 +174,12 @@ public class GameManager : MonoBehaviour
             _spawnerControllers.Add(sc);
             sc.StartWave();
         }
-        
-        EventManager.Instance.AddListener("TowerBought", OnTowerBought);
-        EventManager.Instance.AddListener("TowerSelled", OnTowerSelled);
-        
-        EventManager.Instance.AddListener("CreepDied", OnCreepKilled);
-        EventManager.Instance.AddListener("CreepAttacked", OnBaseAttacked);
-        
-        EventManager.Instance.AddListener("WaveOver", OnWaveOver);
-        EventManager.Instance.AddListener("CreepAttacked", (sender, args) => _creepsCount++);
-    }
-    
-    private void OnTowerSelled(object sender, EventArgs args)
-    {
-        Gold += (args as GoldEventArgs).Gold / 2;
-    }
-
-    private void OnTowerBought(object sender, EventArgs args)
-    {
-        Gold -= (args as GoldEventArgs).Gold;
     }
 
     public void OnBaseAttacked(object sender, EventArgs args)
     {
         Health -= (args as DamageEventArgs).Damage;
+        _score += (args as DamageEventArgs).Damage * 0.3f;
         _creepsCount--;
         if (_currentHealth <= 0)
         {
@@ -154,18 +190,20 @@ public class GameManager : MonoBehaviour
     public void OnCreepKilled(object sender, EventArgs args)
     {
         Gold += (args as GoldEventArgs).Gold;
+        _score += (args as GoldEventArgs).Gold * 0.8f;
         _creepsCount--;
     }
 
     private void GameOver()
     {
-        _gameover = true;
+        _gameOver = true;
         loseScreen.SetActive(true);
     }
 
     private void GameWin()
     {
         winScreen.SetActive(true);
+        winScreen.transform.GetChild(1).GetComponent<Text>().text = "Ваш счёт: " + (int)_score;
     }
 
     IEnumerator CheckForWin()
@@ -175,12 +213,13 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
         
-        GameWin();
+        if (!_gameOver)
+            GameWin();
     }
 
     private void OnWaveOver(object sender, EventArgs args)
     {
-        if (_gameover)
+        if (_gameOver)
             return;
         
         _spawnersReady++;
@@ -188,29 +227,83 @@ public class GameManager : MonoBehaviour
         if (_spawnersReady == _spawnerControllers.Count)
         {
             _spawnersReady = 0;
-            
-            if (_currentWave < settings.WavesCount)
-                StartCoroutine("StartNewWave");
-            else
-                StartCoroutine("CheckForWin");
+            StartCoroutine("StartWave");
         }
+    }
+
+    private void OnBossWaveOver(object sender, EventArgs args)
+    {
+        if (_gameOver)
+            return;
+        
+        _spawnersReady++;
+
+        if (_spawnersReady == _spawnerControllers.Count)
+        {
+            _spawnersReady = 0;
+            StartCoroutine("CheckForWin");
+        }
+    }
+
+    IEnumerator StartWave()
+    {
+        StartCoroutine("BossFight");
+
+        while (_bossFight)
+            yield return null;
+        
+        if (!WavesOver)
+            StartCoroutine("StartNewWave");
+        else
+            StartCoroutine("StartFinalWave");
+            
     }
 
     IEnumerator StartNewWave()
     {
-        while (_creepsCount > 0)
+        while (_creepsCount > 0 || OnGoingWaves)
             yield return null;
-        
-        _currentWave++;
-        Utils.SetText(settings.WavesCount - _currentWave, wavesText, _wavesPrefix);
-        
-        foreach (var sc in _spawnerControllers)
-            sc.SetTimer(settings.WavePeriod);
-        
-        yield return new WaitForSeconds(settings.WavePeriod);
 
+        StartCoroutine(SetTime(settings.WaveBreak, _wavesPrefix));
+        yield return new WaitForSeconds(settings.WaveBreak);
+        
         foreach (var sc in _spawnerControllers)
             sc.StartWave();
+    }
+
+    IEnumerator BossFight()
+    {
+        yield return null;
+    }
+    
+    IEnumerator StartFinalWave()
+    {
+        while (_creepsCount > 0 || OnGoingWaves)
+            yield return null;
+
+        StartCoroutine(SetTime(settings.WaveBreak, "BOSS COMING IN: "));
+        yield return new WaitForSeconds(settings.WaveBreak);
+        
+        foreach (var sc in _spawnerControllers)
+            sc.StartFinalWave();
+
+        yield return null;
+    }
+
+    private float _time;
+    IEnumerator SetTime(float waveBreak, string prefix)
+    {
+        wavesText.gameObject.SetActive(true);
+        _time = waveBreak;
+        
+        while (_time > 0)
+        {
+            _time -= Time.deltaTime;
+            Utils.SetText(string.Format("{0:f}", _time), wavesText, prefix);
+            yield return null;
+        }
+        
+        wavesText.gameObject.SetActive(false);
     }
     
     public void RestartLevel()
@@ -221,5 +314,27 @@ public class GameManager : MonoBehaviour
     public void Menu()
     {
         SceneManager.LoadScene("Menu");
+    }
+
+    public void DestroyObject(GameObject obj, bool parent = false)
+    {
+        if (parent)
+            obj = obj.transform.root.gameObject;
+
+        var poolTest = obj.GetComponent<PoolObject>();
+        
+        if (poolTest)
+            poolTest.ReturnToPool();
+        else 
+            Destroy(obj);
+    }
+
+    public GameObject SpawnObject(GameObject obj, Vector3 position, Quaternion rotation)
+    {
+        var spawn = PoolManager.GetObject(obj.name, position, rotation);
+        if (!spawn)
+            spawn = Instantiate(obj, position, rotation);
+
+        return spawn;
     }
 }

@@ -7,7 +7,7 @@ public class InputController : MonoBehaviour
     private Text _wordText;
     private Text _timeText;
     private float _time;
-
+    
     private void Start()
     {
         _timeText = transform.GetChild(0).GetComponent<Text>();
@@ -19,6 +19,7 @@ public class InputController : MonoBehaviour
     {
         _time += Time.deltaTime;
         Utils.SetText((int)_time, _timeText, "TIME: ");
+        GameManager.Instance.InputMenuOpened = true;
         
         if (!_inputField.isFocused)
         {
@@ -46,8 +47,9 @@ public class InputController : MonoBehaviour
 
     private void Deactivate()
     {
+        GameManager.Instance.InputMenuOpened = false;
         _inputField.text = "";
         Destroy(_inputField.transform.GetChild(0).gameObject);
-        gameObject.SetActive(false);   
+        gameObject.SetActive(false);
     }
 }

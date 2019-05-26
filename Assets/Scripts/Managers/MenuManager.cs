@@ -8,7 +8,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject mainMenuContainer;
     [SerializeField] private GameObject levelSelectionContainer;
     [SerializeField] private GameObject confirmationContainer;
-    
+
     public void MainMenu()
      {
          mainMenuContainer.SetActive(true);

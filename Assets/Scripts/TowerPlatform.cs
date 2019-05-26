@@ -26,11 +26,16 @@ public class TowerPlatform : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (GameManager.Instance.InputMenuOpened)
+            return;
+        
         var tower = BuildManager.Instance.CurrentTower;
+        
         if (!tower || _haveTower)
             return;
         
         EventManager.Instance.AddListener("TypoSucceed", OnTypoSucceed);
+        GameManager.Instance.InputMenuOpened = true;
         WordsManager.Instance.ShowInputPanel();
     }
 
@@ -48,7 +53,7 @@ public class TowerPlatform : MonoBehaviour
 
         var time = (args as TypoEventArgs).Time;
         
-        int price = (int)(tower.GetComponent<TowerController>().Price * (time / 6));
+        int price = (int)(tower.GetComponent<TowerStats>().Price * (time / 6));
 
         if (GameManager.Instance.Gold < price)
             return;

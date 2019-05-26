@@ -4,45 +4,41 @@ using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
 public class TowerController : MonoBehaviour
-{
+{       
     [Header("Shooting settings")]
-    public GameObject bullet;
+    public GameObject bulletSample;
     public float shootDelay;
     public Transform rotationPart;
     public Transform shootingPivots;
     
     [Header("Tower settings")]
-    [SerializeField] private string name;
+    [SerializeField] private string towerName;
 
-    [Range(0,10)]
-    [SerializeField] private float range;
-    [SerializeField] private float turnSpeed;
-    [SerializeField] private float bulletSpeed;
-    [SerializeField] private float damage;
-    [SerializeField] private int price;
+    private TowerStats _stats;
 
-    private bool _isShooting;    
+    private bool _shooting;
+    private bool _broken;
     private GameObject _target;
 
-    public int Price => price;
-
-    private void Start()
+    private void Awake()
     {
-        if (string.IsNullOrEmpty(name))
+        if (string.IsNullOrEmpty(towerName))
         {
-            name = gameObject.name;
+            towerName = gameObject.name;
         }
+        
+        _stats = GetComponent<TowerStats>();
     }
 
     private void Update()
     {
-        if (!_target)
+        if (!_target || _stats.Broken)
             return;      
         
         Vector3 direction = _target.transform.position - transform.position;
         Quaternion lookRotation = Quaternion.LookRotation(direction);
 
-        Vector3 rotation = Quaternion.Lerp(rotationPart.rotation, lookRotation, Time.deltaTime * turnSpeed).eulerAngles;
+        Vector3 rotation = Quaternion.Lerp(rotationPart.rotation, lookRotation, Time.deltaTime * _stats.TurnSpeed).eulerAngles;
         rotationPart.rotation = Quaternion.Euler(0, rotation.y, 0);
         
         if (_click && Time.time > _clickTime + interval) 
@@ -50,38 +46,21 @@ public class TowerController : MonoBehaviour
             _click = false;
         }
         
-        if (!_isShooting)
+        if (!_shooting)
             StartCoroutine("Shoot");
     }
 
     private void FixedUpdate()
     {
+        if (_stats.Broken)
+            return;
+        
         FindClosestTarget();   
     }
 
-    private int _gunIndex;
-    private int CurrentGunIndex
-    {
-        get
-        {
-            var temp = _gunIndex++;
-            
-            if (_gunIndex >= shootingPivots.childCount)
-            {
-                _gunIndex = 0;
-            }
-
-            return temp;
-        }
-    }
-
-    private Transform CurrentGun
-    {
-        get
-        {
-            return shootingPivots.GetChild(CurrentGunIndex);   
-        }
-    }
+    private int _gunIndex = 0;
+    private int CurrentGunIndex => Mathf.Clamp(_gunIndex++, 0, shootingPivots.childCount - 1);
+    private Transform CurrentGun => shootingPivots.GetChild(CurrentGunIndex);
 
     private void FindClosestTarget()
     {
@@ -100,14 +79,10 @@ public class TowerController : MonoBehaviour
             }
         }
 
-        if (tempTarget && minDistance <= range)
-        {
+        if (tempTarget && minDistance <= _stats.AttackRange)
             _target = tempTarget;
-        }
         else
-        {
             _target = null;
-        }
     }
 
     IEnumerator Shoot()
@@ -115,11 +90,19 @@ public class TowerController : MonoBehaviour
         if (!_target)
             yield return null;
         
-        _isShooting = true;
-        var b = PoolManager.GetObject(bullet.name, CurrentGun.position, Quaternion.identity);
-        b.GetComponent<BulletController>().SetFields(_target, bulletSpeed, damage);
+        _shooting = true;
+        var cg = CurrentGun;
+        var pool = PoolManager.GetObject(bulletSample.name, cg.position, Quaternion.identity);
+        if (!pool)
+        {
+            pool = Instantiate(bulletSample, cg.position, Quaternion.identity);
+        }
+        pool.GetComponent<BulletController>().SetFields(_target.transform, _stats.BulletSpeed, _stats.Damage);
+        
+        _stats.TakeDamage();
+
         yield return new WaitForSeconds(shootDelay);
-        _isShooting = false;
+        _shooting = false;
     }
 
     readonly float interval = 0.4f;
@@ -145,19 +128,7 @@ public class TowerController : MonoBehaviour
 
     private void OnDoubleClick()
     {
-        EventManager.Instance.Invoke("TowerSelled", this, new GoldEventArgs(price));
-        
-        var po = GetComponent<PoolObject>();
-        if (!po)
-            Destroy(gameObject);
-        else
-            po.ReturnToPool();
-        
-    }
-
-    private void OnDrawGizmos()
-    {
-        rotationPart = transform.GetChild(0);
-        Gizmos.DrawWireSphere(transform.position, range);
+        GameManager.Instance.DestroyObject(gameObject);
+        EventManager.Instance.Invoke("TowerSold", this, new GoldEventArgs(_stats.Price));     
     }
 }

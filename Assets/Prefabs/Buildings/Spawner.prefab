@@ -90,6 +90,7 @@ GameObject:
   - component: {fileID: 3414099234841506654}
   - component: {fileID: 3414099234841506627}
   - component: {fileID: 3414099234841506624}
+  - component: {fileID: 3056209825903348991}
   - component: {fileID: 3414099234841506626}
   m_Layer: 0
   m_Name: Spawner
@@ -158,6 +159,18 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &3056209825903348991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3414099234841506655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ac4fbc322118964ab7689a042bf84ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3414099234841506626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,9 +183,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e5e663372622ec4fb87138537a655d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeText: {fileID: 8442108393037414123}
-  creepSamples: []
-  spawnTime: 5
+  tableText: {fileID: 0}
+  waves: []
+  bossSample: {fileID: 0}
   target: {fileID: 0}
 --- !u!1 &8315657942717975963
 GameObject:
