@@ -5,20 +5,17 @@ public class InputController : MonoBehaviour
 {
     private InputField _inputField;
     private Text _wordText;
-    private Text _timeText;
     private float _time;
     
     private void Start()
     {
-        _timeText = transform.GetChild(0).GetComponent<Text>();
-        _wordText = transform.GetChild(1).GetComponent<Text>();
-        _inputField = transform.GetChild(2).GetComponent<InputField>();
+        _wordText = transform.GetChild(0).GetComponent<Text>();
+        _inputField = transform.GetChild(1).GetComponent<InputField>();
     }
 
     private void Update()
     {
         _time += Time.deltaTime;
-        Utils.SetText((int)_time, _timeText, "TIME: ");
         GameManager.Instance.InputMenuOpened = true;
         
         if (!_inputField.isFocused)

@@ -10,8 +10,11 @@ public class BulletController : MonoBehaviour
     
     private void Update()
     {
-        if (!_target || !_target.gameObject.activeSelf)
+        if (!_target || !_target.gameObject.activeSelf || !transform)
+        {
             GameManager.Instance.DestroyObject(gameObject);
+            return;
+        }
         
         transform.position = Vector3.MoveTowards(transform.position, _target.transform.position, _speed * Time.deltaTime);
         transform.LookAt(_target.transform);

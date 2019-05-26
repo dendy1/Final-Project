@@ -3,8 +3,11 @@
 [System.Serializable]
 public struct GameSettings
 {
-    public int StartGold;
-    public float StartHealth;
+    [SerializeField] private int startGold;
+    [SerializeField] private float startHealth;
+    [SerializeField] private float waveBreak;
 
-    public float WaveBreak;
+    public int StartGold => startGold;
+    public float StartHealth => startHealth;
+    public float WaveBreak => waveBreak;
 }

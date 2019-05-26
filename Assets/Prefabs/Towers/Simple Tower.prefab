@@ -486,13 +486,13 @@ MonoBehaviour:
   maxHealth:
     baseValue: 100
   repairCD:
-    baseValue: 3
+    baseValue: 10
   price:
     baseValue: 100
   damage:
     baseValue: 30
   attackRange:
-    baseValue: 5
+    baseValue: 6
   bulletSpeed:
     baseValue: 10
   turnSpeed:
@@ -509,7 +509,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59169342dfaa70c4d877b85cdf0ea182, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactionRadius: 3
+  interactionRadius: 5
 --- !u!65 &7143728619056144605
 BoxCollider:
   m_ObjectHideFlags: 0

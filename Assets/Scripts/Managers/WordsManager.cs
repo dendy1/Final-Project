@@ -66,10 +66,10 @@ public class WordsManager : MonoBehaviour
     {
         string word = GetRandomWord();
         
-        Text wordText = inputContainer.transform.GetChild(1).GetComponent<Text>();
+        Text wordText = inputContainer.transform.GetChild(0).GetComponent<Text>();
         wordText.text = word;
         
-        Text placeholder = inputContainer.transform.GetChild(2).GetChild(0).GetComponent<Text>();
+        Text placeholder = inputContainer.transform.GetChild(1).GetChild(0).GetComponent<Text>();
         placeholder.text = "Type " + word + "...";
 
         inputContainer.SetActive(true);

@@ -53,7 +53,7 @@ public class TowerStats : MonoBehaviour
     public void Repair(float value)
     {
         float repairCost = Price * CurrentHealth / MaxHealth;
-        if (repairCost < GameManager.Instance.Gold)
+        if (repairCost > GameManager.Instance.Gold * 0.2f)
             return;
 
         CurrentHealth += value;
